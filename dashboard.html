@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Баня на колесах</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    color: white;
+
+    /* ПЯТНИСТЫЙ ФОН */
+    background:
+        radial-gradient(circle at 20% 30%, #00aa55 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, #064d2b 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, #022d18 0%, transparent 50%),
+        #000;
+}
+
+/* ЗАМЕНЕНА КАРТИНКА */
+header {
+    height: 100vh;
+    background: url('Без названия.jpg') no-repeat center/cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+header h1 {
+    background: rgba(0,0,0,0.6);
+    padding: 30px;
+    border-radius: 15px;
+    font-size: 45px;
+}
+
+.section {
+    padding: 50px;
+    text-align: center;
+}
+
+.pricing {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: rgba(0,0,0,0.7);
+    padding: 25px;
+    border-radius: 15px;
+    width: 220px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    background: rgba(0,0,0,0.9);
+}
+
+.form-box {
+    background: rgba(0,0,0,0.7);
+    padding: 25px;
+    border-radius: 15px;
+    display: inline-block;
+    max-width: 300px;
+}
+
+input, textarea {
+    width: 90%;
+    padding: 10px;
+    margin: 8px;
+    border-radius: 8px;
+    border: none;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #2ecc71;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.delete {
+    background: crimson;
+    margin-top: 10px;
+}
+
+.booking-item {
+    background: rgba(0,0,0,0.7);
+    margin: 10px auto;
+    padding: 15px;
+    border-radius: 10px;
+    max-width: 400px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1> Баня, которая приезжает к тебе </h1>
+</header>
+
+<section class="section">
+    <h2>Почему это топ?</h2>
+    <p>
+        Это не просто баня — это уровень отдыха, который ты реально запомнишь.  
+        Живой пар, аромат дерева, уют и атмосфера, которая расслабляет с первой минуты.  
+        Один раз попробуешь — и другие варианты уже не захочешь.
+    </p>
+</section>
+
+<section class="section">
+    <h2>📅 Режим работы</h2>
+    <p><b>Понедельник – Четверг</b></p>
+    <p>⏰ 10:00 – 22:00</p>
+
+    <h2>💰 Тарифы</h2>
+    <div class="pricing">
+        <div class="card"><h3>1 час</h3><h2>500 грн</h2></div>
+        <div class="card"><h3>3 часа</h3><h2>850 грн</h2></div>
+        <div class="card"><h3>5 часов</h3><h2>1200 грн</h2></div>
+    </div>
+</section>
+
+<section class="section">
+    <h2>📌 Запись на баню</h2>
+
+    <div class="form-box">
+        <input type="date" id="date"><br>
+        <input type="time" id="time"><br>
+        <textarea id="comment" placeholder="Пожелания (например: больше пара 🔥)"></textarea><br>
+        <button onclick="book()">Записаться</button>
+    </div>
+
+    <h3>Ваши записи:</h3>
+    <div id="list"></div>
+</section>
+
+<script>
+let user = localStorage.getItem("currentUser");
+
+if (!user) {
+    window.location.href = "index.html";
+}
+
+function book() {
+    let date = document.getElementById("date").value;
+    let time = document.getElementById("time").value;
+    let comment = document.getElementById("comment").value;
+
+    if (!date || !time) {
+        alert("Выбери дату и время");
+        return;
+    }
+
+    let d = new Date(date);
+    let day = d.getDay();
+
+    if (day < 1 || day > 4) {
+        alert("⛔Можно записаться только в Пн–Чт!⛔");
+        return;
+    }
+
+    let hour = parseInt(time.split(":")[0]);
+
+    if (hour < 10 || hour >= 22) {
+        alert("Только с 10:00 до 22:00!");
+        return;
+    }
+
+    let bookings = JSON.parse(localStorage.getItem(user+"_book")) || [];
+
+    bookings.push({ date, time, comment });
+
+    localStorage.setItem(user+"_book", JSON.stringify(bookings));
+    load();
+}
+
+function deleteBooking(i) {
+    let bookings = JSON.parse(localStorage.getItem(user+"_book")) || [];
+    bookings.splice(i, 1);
+    localStorage.setItem(user+"_book", JSON.stringify(bookings));
+    load();
+}
+
+function load() {
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    let bookings = JSON.parse(localStorage.getItem(user+"_book")) || [];
+
+    bookings.forEach((b, i) => {
+        let div = document.createElement("div");
+        div.className = "booking-item";
+
+        div.innerHTML = `
+            <b>${b.date}</b> в <b>${b.time}</b><br>
+            💬 ${b.comment || "без пожеланий"}<br>
+            <button class="delete" onclick="deleteBooking(${i})">Удалить</button>
+        `;
+
+        list.appendChild(div);
+    });
+}
+
+load();
+</script>
+
+</body>
+</html>

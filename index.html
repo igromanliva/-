@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Баня на колесах</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #111;
+    color: white;
+}
+
+header {
+    height: 100vh;
+    background: url('https://images.unsplash.com/photo-1600334129128-685c5582fd35') no-repeat center/cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+header h1 {
+    background: rgba(0,0,0,0.6);
+    padding: 30px;
+    border-radius: 15px;
+    font-size: 50px;
+}
+
+.section {
+    padding: 50px;
+    text-align: center;
+}
+
+.card {
+    background: #222;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 10px;
+    display: inline-block;
+    width: 200px;
+}
+
+button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    background: orange;
+    font-weight: bold;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🔥 Лучшая баня на колесах 🔥<br>Отдых премиум уровня</h1>
+</header>
+
+<section class="section">
+    <h2>Почему мы?</h2>
+    <p>
+        Это не просто баня — это настоящий отдых, который приезжает прямо к тебе.  
+        Горячий пар, аромат дерева, полное расслабление и атмосфера, которую невозможно забыть.  
+        Мы создаём идеальные условия для отдыха с друзьями, семьёй или просто для перезагрузки.  
+        Один раз попробуешь — и уже не захочешь обычную баню.
+    </p>
+</section>
+
+<section class="section">
+    <h2>📅 Режим работы</h2>
+    <p>С пятницы по четверг | 10:00 – 20:00</p>
+
+    <h2>💰 Цены</h2>
+    <div class="card">1 час<br>500 грн</div>
+    <div class="card">3 часа<br>850 грн</div>
+    <div class="card">5 часов<br>1200 грн</div>
+</section>
+
+<section class="section">
+    <h2>Запись</h2>
+    <input type="date" id="date"><br>
+    <input type="time" id="time"><br><br>
+    <button onclick="book()">Записаться</button>
+
+    <h3>Ваши записи:</h3>
+    <ul id="list"></ul>
+</section>
+
+<script>
+let user = localStorage.getItem("currentUser");
+
+if (!user) {
+    window.location.href = "index.html";
+}
+
+function book() {
+    let date = document.getElementById("date").value;
+    let time = document.getElementById("time").value;
+
+    if (!date || !time) return alert("Выбери дату и время");
+
+    let bookings = JSON.parse(localStorage.getItem(user+"_book")) || [];
+    bookings.push(date + " " + time);
+
+    localStorage.setItem(user+"_book", JSON.stringify(bookings));
+    load();
+}
+
+function load() {
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    let bookings = JSON.parse(localStorage.getItem(user+"_book")) || [];
+
+    bookings.forEach(b => {
+        let li = document.createElement("li");
+        li.innerText = b;
+        list.appendChild(li);
+    });
+}
+
+load();
+</script>
+
+</body>
+</html>
